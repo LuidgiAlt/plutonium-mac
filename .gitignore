@@ -1,0 +1,5 @@
+# Created by setup.sh
+/runner/
+/prefix/
+/tools/*.exe
+.DS_Store
