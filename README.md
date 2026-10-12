@@ -100,5 +100,7 @@ In the launcher, point each game at its Steam folder, for example
 
 ## License
 
+The scripts are under the MIT license (`LICENSE`).
+
 Plutonium, Call of Duty and CrossOver belong to their owners. This project is
 not affiliated with them.
