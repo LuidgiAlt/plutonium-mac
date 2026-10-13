@@ -66,6 +66,7 @@ In the launcher, point each game at its Steam folder, for example
 | `RENDERER=dxmt` | CrossOver's DXMT instead of wined3d |
 | `LAZY_EXEC=0` | Turn the stall fix off, for comparison |
 | `WINDOWED=1` | Force BO2's Windowed mode |
+| `D3D9=vulkan` | wined3d's Vulkan renderer for Direct3D 9 games instead of OpenGL |
 
 ## Notes
 

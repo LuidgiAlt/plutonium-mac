@@ -8,6 +8,8 @@
 #   RENDERER=dxmt      CrossOver's DXMT instead of wined3d (untested here)
 #   LAZY_EXEC=0        turn the stall fix off
 #   WINDOWED=1         force Windowed mode in BO2
+#   D3D9=vulkan        wined3d's Vulkan renderer for Direct3D 9 games (BO1, WaW)
+#                      instead of OpenGL; uses the persistent pipeline cache
 set -euo pipefail
 here=$(cd -- "$(dirname -- "$0")" && pwd)
 runner="$here/runner/CrossOver"
@@ -38,6 +40,12 @@ for v in "${vars[@]}"; do
   export "$v"
   "$wine" reg add 'HKCU\Environment' /v "${v%%=*}" /d "${v#*=}" /f > /dev/null 2>&1
 done
+# wined3d renders Direct3D 9 with OpenGL unless told otherwise.
+if [ "${D3D9:-}" = vulkan ]; then
+  "$wine" reg add 'HKCU\Software\Wine\Direct3D' /v renderer /d vulkan /f > /dev/null 2>&1
+else
+  "$wine" reg delete 'HKCU\Software\Wine\Direct3D' /v renderer /f > /dev/null 2>&1
+fi
 "$WINESERVER" -w 2>/dev/null || true
 
 # Apple GPUs support at most 4x MSAA; BO2 crashes when its config asks for 8x.
