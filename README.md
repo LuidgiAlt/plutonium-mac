@@ -87,7 +87,7 @@ In the launcher, point each game at its Steam folder, for example
 | `MAXFPS=<n>` | With DXMT, cap the frame rate with Metal's frame pacing (e.g. 60) |
 | `LAZY_EXEC=0` | Turn the stall fix off, for comparison |
 | `WINDOWED=1` | Force BO2's Windowed mode |
-| `D3D9=vulkan` | wined3d's Vulkan renderer for Direct3D 9 games instead of OpenGL |
+| `D3D9=vulkan` | wined3d's Vulkan renderer for Direct3D 9 games instead of OpenGL. Black Ops needs further wined3d patches for it (a separate project, not published yet); without them its world stays black |
 
 ## Notes
 
