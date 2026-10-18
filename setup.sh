@@ -3,6 +3,9 @@
 #   runner/CrossOver  APFS copy of CrossOver's runtime with the patched binaries
 #   prefix/           Wine prefix
 #   ./setup.sh [path to the crossover-rosetta-patches build folder]
+#   DXMT_ARCHIVE=~/Downloads/dxmt-v0.80-builtin.tar.gz ./setup.sh ...
+#                     also put DXMT v0.80 in the runner, in place of CrossOver's
+#                     bundled v0.72 (kept as lib/dxmt.cx), for RENDERER=dxmt
 set -euo pipefail
 here=$(cd -- "$(dirname -- "$0")" && pwd)
 build=${1:-$here/../crossover-rosetta-patches/build}
@@ -33,6 +36,28 @@ for entry in "${files[@]}"; do
   [ -f "$dst.orig" ] || cp -p "$dst" "$dst.orig"
   cp "$src" "$dst.new" && mv -f "$dst.new" "$dst"
 done
+# run.sh RENDERER=dxmt installs DXMT as Wine's d3d11 and dxgi, and puts these
+# back for wined3d.
+for arch in i386-windows x86_64-windows; do
+  for dll in d3d11 dxgi d3d10core winemetal; do
+    f=$runner/lib/wine/$arch/$dll.dll
+    [ -f "$f.orig" ] || cp -p "$f" "$f.orig"
+  done
+done
+
+# DXMT v0.80 (github.com/3Shain/dxmt releases, dxmt-v0.80-builtin.tar.gz).
+dxmt_sha256=8f260e36b5739e68f3bad613381441385c4dc7b85b78ba8de653d5a6a264529d
+if [ -n "${DXMT_ARCHIVE:-}" ]; then
+  [ "$(shasum -a 256 "$DXMT_ARCHIVE" | cut -d' ' -f1)" = "$dxmt_sha256" ] ||
+    { echo "$DXMT_ARCHIVE is not dxmt-v0.80-builtin.tar.gz (SHA-256 differs)" >&2; exit 1; }
+  tmp=$(mktemp -d)
+  tar -xzf "$DXMT_ARCHIVE" -C "$tmp"
+  [ -f "$tmp/v0.80/x86_64-unix/winemetal.so" ] || { echo "unexpected layout in $DXMT_ARCHIVE" >&2; rm -rf "$tmp"; exit 1; }
+  [ -d "$runner/lib/dxmt.cx" ] || mv "$runner/lib/dxmt" "$runner/lib/dxmt.cx"
+  rm -rf "$runner/lib/dxmt" && mv "$tmp/v0.80" "$runner/lib/dxmt"
+  rm -rf "$tmp"
+  echo "DXMT v0.80: $runner/lib/dxmt"
+fi
 echo "runner: $runner"
 
 export CX_ROOT="$runner" WINEPREFIX="$here/prefix" WINESERVER="$runner/bin/wineserver"
