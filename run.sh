@@ -9,6 +9,7 @@
 #                      v0.80 (setup.sh DXMT_ARCHIVE=...), recommended for BO2
 #   MAXFPS=<n>         with DXMT: cap the frame rate with Metal's frame pacing
 #   LAZY_EXEC=0        turn the stall fix off
+#   SOCKFIX=0          turn patch 0006 off (every socket receive asks wineserver)
 #   WINDOWED=1         force Windowed mode in BO2
 #   D3D9=vulkan        wined3d's Vulkan renderer for Direct3D 9 games (BO1, WaW)
 #                      instead of OpenGL; uses the persistent pipeline cache
@@ -37,7 +38,8 @@ esac
 # patched ntdll emulates them. Lazy exec removes the stalls caused by the
 # bootstrapper turning off DEP (it has no NX_COMPAT flag).
 vars=(WINE_ROSETTA_EXEC_BREAKPOINTS=1 WINE_ROSETTA_WOW64_BREAKPOINTS=1 WINE_ROSETTA_CALL_WORKAROUND=1
-      "WINE_ROSETTA_LAZY_EXEC=${LAZY_EXEC:-1}" "CX_GRAPHICS_BACKEND=$renderer")
+      "WINE_ROSETTA_LAZY_EXEC=${LAZY_EXEC:-1}" "WINE_SOCK_FASTPATH=${SOCKFIX:-1}"
+      "CX_GRAPHICS_BACKEND=$renderer")
 "$WINESERVER" -k 2>/dev/null || true
 "$WINESERVER" -w 2>/dev/null || true
 

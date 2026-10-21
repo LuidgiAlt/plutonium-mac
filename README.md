@@ -3,7 +3,7 @@
 Scripts to run [Plutonium](https://plutonium.pw) on an Apple Silicon Mac with
 CrossOver 26.3 and the
 [CrossOver Rosetta patches](https://github.com/LuidgiAlt/crossover-rosetta-patches.git). Tested with Black
-Ops II (Zombies and Multiplayer with bots) on an M1 Pro.
+Ops II (Zombies and Multiplayer, with bots and online) on an M1 Pro.
 
 Stock CrossOver cannot run it:
 - Plutonium arms x86 hardware breakpoints that Rosetta cannot deliver, so the
@@ -15,7 +15,9 @@ The patches from
 [crossover-rosetta-patches](https://github.com/LuidgiAlt/crossover-rosetta-patches.git)
 are required: without them, neither Plutonium nor the games run correctly.
 Their patch 0005 also removed Black Ops II's multiplayer slowdowns: the main
-game thread spent about half its time in Wine's `PulseEvent`.
+game thread spent about half its time in Wine's `PulseEvent`. Patch 0006
+reduced the stutter in online matches with real players: the main thread
+waited for wineserver on socket receives that had nothing to read.
 
 ## Results (Black Ops II, M1 Pro)
 
@@ -24,6 +26,7 @@ game thread spent about half its time in Wine's `PulseEvent`.
 | Renderer | DXMT v0.80 (`RENDERER=dxmt`); it played better than wined3d on Vulkan |
 | Multiplayer, 1080p | Median 97 FPS, lowest second 38 FPS (median 68 and lowest 20 before patch 0005) |
 | Zombies and Multiplayer with bots | No stalls since patch 0004 |
+| Online with real players | Seconds under 30 FPS in multiplayer: 2.4% before patch 0006, 0.3% after. Zombies with other players: from dozens of seconds under 15 frames per match to a handful. Still slower than with bots (multiplayer median 66 FPS): the game's own work under Rosetta |
 
 ## Requirements
 
@@ -86,6 +89,7 @@ In the launcher, point each game at its Steam folder, for example
 | `RENDERER=dxmt` | DXMT instead of wined3d for Direct3D 10/11 (BO2): installs DXMT as Wine's `d3d11` and `dxgi` |
 | `MAXFPS=<n>` | With DXMT, cap the frame rate with Metal's frame pacing (e.g. 60) |
 | `LAZY_EXEC=0` | Turn the stall fix off, for comparison |
+| `SOCKFIX=0` | Turn patch 0006 off (empty socket receives go to wineserver again), for comparison |
 | `WINDOWED=1` | Force BO2's Windowed mode |
 | `D3D9=vulkan` | wined3d's Vulkan renderer for Direct3D 9 games instead of OpenGL. Black Ops needs further wined3d patches for it (a separate project, not published yet); without them its world stays black |
 
