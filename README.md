@@ -1,3 +1,4 @@
+# See https://github.com/LuidgiAlt/plutonium-mac-aio, enjoy !
 # Plutonium on Apple Silicon
 
 Scripts to run [Plutonium](https://plutonium.pw) on an Apple Silicon Mac with
